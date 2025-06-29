@@ -9,6 +9,7 @@ namespace Uttt.Micro.Libro.Controllers
     public class LibroMaterialController : ControllerBase
     {
         private readonly IMediator _mediator;
+
         public LibroMaterialController(IMediator mediator)
         {
             _mediator = mediator;
@@ -19,6 +20,7 @@ namespace Uttt.Micro.Libro.Controllers
         {
             return await _mediator.Send(data);
         }
+
         [HttpGet]
         public async Task<ActionResult<List<LibroMaterialDto>>> GetLibros()
         {
@@ -46,11 +48,10 @@ namespace Uttt.Micro.Libro.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Unit>> Eliminar(Guid id)
         {
-
             return await _mediator.Send(new Eliminar.EliminarLibro { Id = id });
         }
 
-        // Agrega esto temporalmente a tu controlador
+        // Info adicional para debug
         [HttpGet("instance-info")]
         public IActionResult GetInstanceInfo()
         {
@@ -68,8 +69,5 @@ namespace Uttt.Micro.Libro.Controllers
             var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
             return Ok(new { IpReal = ip });
         }
-
-
     }
-
 }

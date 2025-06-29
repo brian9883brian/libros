@@ -1,12 +1,9 @@
 ﻿using FluentValidation.AspNetCore;
 using MediatR;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
+using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Uttt.Micro.Libro.Aplicacion;
 using Uttt.Micro.Libro.Persistencia;
-using Microsoft.EntityFrameworkCore;
-
-
 
 namespace Uttt.Micro.Libro.Extenciones
 {
@@ -14,20 +11,20 @@ namespace Uttt.Micro.Libro.Extenciones
     {
         public static IServiceCollection AddCustomServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllers().AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Nuevo>());
-
             services.AddDbContext<ContextoLibreria>(options =>
-    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySql(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection"))
+                ));
 
+            // Registra controladores y FluentValidation
+            services.AddControllers().AddFluentValidation(cfg =>
+                cfg.RegisterValidatorsFromAssemblyContaining<Nuevo>());
 
-            ////Agregar servicios de CORS
-            //services.AddCors(options =>
-            //{
-
-            //})
-
-            //agregamos MediaR como servicio
+            // Registra MediatR, asegúrate que el namespace y clase sean correctos
             services.AddMediatR(typeof(Nuevo.Manejador).Assembly);
+
+            // AutoMapper (si usas)
             services.AddAutoMapper(typeof(Consulta.Manejador));
 
             return services;
